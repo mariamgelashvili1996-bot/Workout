@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0D0A0F">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Glutes & Core Routine</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiR2x1dGVzICYgQ29yZSBSb3V0aW5lIiwic2hvcnRfbmFtZSI6IkdDUiIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMEQwQTBGIiwidGhlbWVfY29sb3IiOiIjMEQwQTBGIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsPHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJz48cmVjdCB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgZmlsbD0nJTIzMEQwQTBGJyByeD0nOTAnLz48dGV4dCB4PSc1MCUnIHk9JzUwJScgZm9udC1zaXplPScxMDAnIGZvbnQtd2VpZ2h0PSc5MDAnIGZvbnQtZmFtaWx5PSdzeXN0ZW0tdWknIGZpbGw9JyUyM0U4OTFCMScgdGV4dC1hbmNob3I9J21pZGRsZScgZHk9Jy4zNWVtJz5HQzwvdGV4dD48L3N2Zz4iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifV19">
+<style>
+:root{
+  --bg:#0D0A0F;
+  --card:#13101A;
+  --t1:#F5F0F8;
+  --t2:#9A8CAA;
+  --t3:#4A3D5A;
+  --pnk:#E891B1;
+  --pnk-dim:#9B4A6E;
+  --pnk-bg:#1A0D14;
+  --prp:#B57BF0;
+  --prp-dim:#7340B8;
+  --prp-bg:#120A1E;
+  --grn:#6EDBA8;
+  --grn-dim:#3A8A65;
+  --grn-bg:#0A1810;
+  --amber:#F0C060;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--t1);font-family:-apple-system,'SF Pro Display','Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{max-width:480px;margin:0 auto;padding-bottom:20px;min-height:100vh;min-height:100dvh}
+button{font-family:inherit;border:none;cursor:pointer}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(232,145,177,.3)}50%{box-shadow:0 0 20px rgba(232,145,177,.6)}}
+@keyframes timerPulse{0%,100%{color:#F5F0F8}50%{color:#E891B1}}
+@keyframes switchPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.8;transform:scale(1.02)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+'use strict';
+const h=React.createElement,{useState,useEffect,useRef,useCallback}=React;
+
+// ══════════════════════════════════════════
+// COLOUR SYSTEM
+// ══════════════════════════════════════════
+const CL={
+  pink:{a:"#E891B1",d:"#9B4A6E",bg:"#1A0D14",g:"linear-gradient(135deg,#2A0D1A,#1A0A14)"},
+  purple:{a:"#B57BF0",d:"#7340B8",bg:"#120A1E",g:"linear-gradient(135deg,#1A0A2A,#0F081A)"},
+  green:{a:"#6EDBA8",d:"#3A8A65",bg:"#0A1810",g:"linear-gradient(135deg,#0A2018,#081410)"},
+};
+
+// ══════════════════════════════════════════
+// PROGRAM DATA
+// ══════════════════════════════════════════
+const PROGRAM={
+  profile:{name:"Glutes & Core Development",age:29,weight:45,height:159,level:"Intermediate"},
+  notes:[
+    {l:"Volume watch",t:"Lower body days carry 28 working sets — high for 45 kg. If soreness lasts past 72 h or sleep is disrupted, trim Leg Curl and Adductor/Abductor to 2×15 first."},
+    {l:"Upper glute strategy",t:"Upper glutes = gluteus medius + minimus, not lower maximus. Hip thrusts hit the maximus. Real medius drivers: Abductor Machine, Hyperextension, Reverse Lunges upright. Banded warm-up before every lower body session is non-negotiable."},
+    {l:"Cool-down policy",t:"Mon & Fri: 4-min hip routine kept. Tight hip flexors suppress glute activation. Wed: skipped — Thu is full rest. Sun yoga provides deep hip + thoracic work before Mon's heavy leg day."},
+    {l:"Protein target",t:"1.6–1.8 g/kg = 72–81 g/day at your weight. Prioritise on rest and gym days equally."},
+  ],
+  days:[
+    // ── MONDAY — Lower Body / Glutes ──
+    {id:"mon",label:"MON",title:"LOWER BODY",sub:"Glutes · ~85 min",color:"pink",type:"gym",
+    warmup:[
+      {n:"Treadmill walk (incline 4–6%)",d:"4 min · elevate heart rate, warm hip flexors",t:240},
+      {n:"Banded clamshells",d:"15 reps / side · wake up gluteus medius before loading"},
+      {n:"Banded lateral walks",d:"10 steps / direction · pre-activate abductor line — upper glute driver"},
+      {n:"Hip circles (standing)",d:"10 each / side · lubricate hip joint, reduce impingement risk"},
+    ],
+    ex:[
+      {id:"hyp1",nm:"HYPEREXTENSION",sp:"3 × 12 · Rest 60 s",cue:"Squeeze glutes at top — don't hyperextend lumbar.",steps:["Set up on hyperextension bench, hips at pad edge.","Cross arms at chest or hold plate at chest.","Lower torso until you feel a hamstring stretch.","Drive hips into pad and squeeze glutes at top.","Do not hyperextend the lower back."],avoid:"Hyperextending lumbar. Losing glute squeeze.",rest:60,repMax:null,warmups:[],type:"repOnly"},
+      {id:"legcurl1",nm:"LEG CURL",sp:"4 × 15 · Rest 60 s",cue:"2 sec up, 3 sec down. Pelvis stays anchored.",steps:["Lie prone, pad just above ankles.","Anchor hips firmly — do not let them rise.","Curl 2 seconds up, pause briefly at top.","Lower for a full 3-second count."],avoid:"Hips lifting. Using momentum.",rest:60,repMax:null,warmups:[],type:"weighted"},
+      {id:"squat1",nm:"BACK SQUAT",sp:"4 × 15 · Rest 2 min",cue:"Drive knees out to activate gluteus medius.",steps:["Bar across upper traps, feet shoulder-width.","Brace core, chest up.","Squat to parallel or below, driving knees out.","Drive through mid-foot back to standing."],avoid:"Knees caving. Chest collapsing.",rest:120,repMax:null,warmups:[],type:"weighted"},
+      {id:"lunge1",nm:"REVERSE LUNGES",sp:"3 × 12 / leg · Rest 75 s",cue:"Upright torso = more glute, less quad.",steps:["Stand tall, feet hip-width.","Step directly back — keep front shin vertical.","Lower rear knee toward floor.","Drive through front heel to return.","Keep torso upright throughout."],avoid:"Leaning forward. Front knee caving.",rest:75,repMax:null,warmups:[],type:"weighted"},
+      {id:"rdl1",nm:"ROMANIAN DEADLIFT",sp:"4 × 12 · Rest 90 s",cue:"Push hips back, feel hamstring stretch before reversing.",steps:["Bar in hands, feet hip-width, soft knees.","Hinge at hips — push them back, not down.","Lower bar along legs until deep hamstring stretch.","Drive hips forward to stand — squeeze glutes."],avoid:"Rounding back. Squatting the weight.",rest:90,repMax:null,warmups:[],type:"weighted"},
+      {id:"thrust1",nm:"HIP THRUST",sp:"4 × 15 · Rest 90 s",cue:"Hold 1 sec at top with posterior pelvic tilt.",steps:["Upper back on bench, bar across hips.","Plant feet flat, hip-width.","Drive hips up to full extension.","Posterior pelvic tilt at top — tuck tailbone under.","Hold 1 second, lower with control."],avoid:"Overextending lumbar. Losing pelvic tilt.",rest:90,repMax:null,warmups:[],type:"weighted"},
+      {id:"abduct1",nm:"LEG ABDUCTOR MACHINE",sp:"3 × 15 · Rest 60 s",cue:"Slow tempo + 10-rep pulse at end of final set — upper glute isolation.",steps:["Sit tall, pads on outer knees.","Slowly push pads apart to full range.","Return with control — do not let weight slam.","Final set: after 15 reps, add 10 small pulses at full range."],avoid:"Rushing tempo. Partial range.",rest:60,repMax:null,warmups:[],type:"repOnly"},
+      {id:"adduct1",nm:"LEG ADDUCTOR MACHINE",sp:"3 × 15 · Rest 60 s",cue:"Controlled movement. Hip stability and injury balance.",steps:["Sit tall, pads on inner knees.","Draw knees together with control.","Return slowly — feel inner thigh resist."],avoid:"Slamming weight. Leaning forward.",rest:60,repMax:null,warmups:[],type:"repOnly"},
+    ],
+    cool:[
+      {n:"Pigeon pose",d:"60 sec / side · gluteus maximus + piriformis",t:60,sides:2},
+      {n:"Kneeling hip flexor lunge",d:"45 sec / side · hip flexors shortened by squats",t:45,sides:2},
+      {n:"Supine figure-4",d:"30 sec / side · deep glute, sciatic decompression",t:30,sides:2},
+    ]},
+
+    // ── TUESDAY — Pilates ──
+    {id:"tue",label:"TUE",title:"PILATES",sub:"Core · 45–60 min",color:"purple",type:"nonGym",
+    note:"Trainer-led. Moderate intensity — recovering from Monday's heavy leg session. Focus: deep core stability (transverse abdominis + multifidus), oblique definition, spinal articulation."},
+
+    // ── WEDNESDAY — Upper Body / Back ──
+    {id:"wed",label:"WED",title:"UPPER BODY",sub:"Back · ~71 min",color:"purple",type:"gym",
+    warmup:[
+      {n:"Rowing machine or arm bike",d:"3 min · warm shoulder girdle without taxing legs",t:180},
+      {n:"Band pull-aparts (overhand)",d:"2 × 15 · activate rear delts + rhomboids"},
+      {n:"Arm circles (small to large)",d:"20 sec / direction · shoulder joint mobilisation"},
+      {n:"Dead hang",d:"20–30 sec · lat stretch, decompress, grip primer",t:30},
+    ],
+    ex:[
+      {id:"hyp2",nm:"HYPEREXTENSION",sp:"3 × 12 · Rest 60 s",cue:"Focus on erector squeeze, not glutes.",steps:["Set up on hyperextension bench, hips at pad edge.","Lower with control.","Raise by squeezing erectors — back, not glutes today."],avoid:"Using glutes as primary mover.",rest:60,repMax:null,warmups:[],type:"repOnly"},
+      {id:"chinup",nm:"ASSISTED CHIN-UP",sp:"4 × 15 · Rest 90 s",cue:"Supinated grip. Full hang at the bottom.",steps:["Supinated (palms-in) grip, shoulder-width.","Full dead hang at start of each rep.","Pull chest toward bar, drive elbows down.","Lower fully — do not cut range short."],avoid:"Kipping. Partial range. Neutral/overhand grip.",rest:90,repMax:null,warmups:[],type:"repOnly"},
+      {id:"pulldown",nm:"FRONT LAT PULLDOWN",sp:"4 × 15 · Rest 75 s",cue:"Pull to upper chest. Elbows drive down and back.",steps:["Wide overhand grip. Slight lean back — 10–15°.","Retract and depress scapulae before pulling.","Pull bar to upper chest, elbows drive down + back.","Slow return to full stretch."],avoid:"Behind-neck pulling. Excessive lean. Momentum.",rest:75,repMax:null,warmups:[],type:"weighted"},
+      {id:"latrow",nm:"LATERAL ROW",sp:"4 × 15 · Rest 75 s",cue:"Retract scapula first, then pull arm.",steps:["Cable or machine at side.","Retract shoulder blade before arm moves.","Pull handle to lower rib cage.","Squeeze at finish — scapulae fully back.","Return with control, protract for stretch."],avoid:"Shrugging. Arm leading the pull.",rest:75,repMax:null,warmups:[],type:"weighted"},
+      {id:"reardelt",nm:"REAR DELTOID FLY",sp:"4 × 15 · Rest 60 s",cue:"Light weight. Think 'widen' not 'lift'.",steps:["Pec deck or cable, facing the machine.","Arms extended, slight bend locked.","Push handles back — think spreading wings.","Squeeze rear delts + mid-traps 2 s.","Return slowly."],avoid:"Bending elbows. Heavy loading. Rocking torso.",rest:60,repMax:null,warmups:[],type:"weighted"},
+      {id:"dbrow",nm:"DUMBBELL ROW",sp:"4 × 12 · Rest 75 s",cue:"Drive elbow toward hip, not the ceiling.",steps:["One knee and hand on bench, other foot on floor.","DB hanging from arm at full extension.","Row by driving elbow straight back toward hip.","Squeeze at top. Lower fully."],avoid:"Elbow flaring upward. Rotating torso.",rest:75,repMax:null,warmups:[],type:"weighted"},
+      {id:"tripush",nm:"TRICEP PUSHDOWN",sp:"4 × 15 · Rest 60 s",cue:"Lock elbows at sides. Full extension at the bottom.",steps:["V-bar on high pulley. Pin elbows at sides.","Push down to full extension. Flex triceps 1 s.","Return to 90° slowly. Elbows stay pinned."],avoid:"Elbows flaring. Body lean.",rest:60,repMax:null,warmups:[],type:"weighted"},
+      {id:"shldrpress",nm:"SHOULDER PRESS",sp:"4 × 12 · Rest 90 s",cue:"Neutral spine. Press straight up.",steps:["Seated, dumbbells at shoulder height.","Brace core. Neutral spine throughout.","Press straight up to full extension.","Lower with control to shoulder height."],avoid:"Arching lower back. Pressing in front of face.",rest:90,repMax:null,warmups:[],type:"weighted"},
+    ],
+    cool:[]},
+
+    // ── THURSDAY — Rest ──
+    {id:"thu",label:"THU",title:"REST",sub:"Full recovery",color:"green",type:"rest",
+    note:"No training. Prioritise 7–9 hours sleep — this is when muscle is built. Protein target: 72–81 g today. No active recovery needed."},
+
+    // ── FRIDAY — Lower Body / Glutes (repeat) ──
+    {id:"fri",label:"FRI",title:"LOWER BODY",sub:"Glutes · ~85 min",color:"pink",type:"gym",
+    warmup:[
+      {n:"Treadmill walk (incline 4–6%)",d:"4 min · elevate heart rate, warm hip flexors",t:240},
+      {n:"Banded clamshells",d:"15 reps / side · wake up gluteus medius before loading"},
+      {n:"Banded lateral walks",d:"10 steps / direction · pre-activate abductor line — upper glute driver"},
+      {n:"Hip circles (standing)",d:"10 each / side · lubricate hip joint, reduce impingement risk"},
+    ],
+    ex:[
+      {id:"hyp3",nm:"HYPEREXTENSION",sp:"3 × 12 · Rest 60 s",cue:"Squeeze glutes at top — don't hyperextend lumbar.",steps:["Set up on hyperextension bench, hips at pad edge.","Cross arms at chest or hold plate at chest.","Lower torso until you feel a hamstring stretch.","Drive hips into pad and squeeze glutes at top.","Do not hyperextend the lower back."],avoid:"Hyperextending lumbar. Losing glute squeeze.",rest:60,repMax:null,warmups:[],type:"repOnly"},
+      {id:"legcurl2",nm:"LEG CURL",sp:"4 × 15 · Rest 60 s",cue:"2 sec up, 3 sec down. Pelvis stays anchored.",steps:["Lie prone, pad just above ankles.","Anchor hips firmly — do not let them rise.","Curl 2 seconds up, pause briefly at top.","Lower for a full 3-second count."],avoid:"Hips lifting. Using momentum.",rest:60,repMax:null,warmups:[],type:"weighted"},
+      {id:"squat2",nm:"BACK SQUAT",sp:"4 × 15 · Rest 2 min",cue:"Drive knees out to activate gluteus medius.",steps:["Bar across upper traps, feet shoulder-width.","Brace core, chest up.","Squat to parallel or below, driving knees out.","Drive through mid-foot back to standing."],avoid:"Knees caving. Chest collapsing.",rest:120,repMax:null,warmups:[],type:"weighted"},
+      {id:"lunge2",nm:"REVERSE LUNGES",sp:"3 × 12 / leg · Rest 75 s",cue:"Upright torso = more glute, less quad.",steps:["Stand tall, feet hip-width.","Step directly back — keep front shin vertical.","Lower rear knee toward floor.","Drive through front heel to return.","Keep torso upright throughout."],avoid:"Leaning forward. Front knee caving.",rest:75,repMax:null,warmups:[],type:"weighted"},
+      {id:"rdl2",nm:"ROMANIAN DEADLIFT",sp:"4 × 12 · Rest 90 s",cue:"Push hips back, feel hamstring stretch before reversing.",steps:["Bar in hands, feet hip-width, soft knees.","Hinge at hips — push them back, not down.","Lower bar along legs until deep hamstring stretch.","Drive hips forward to stand — squeeze glutes."],avoid:"Rounding back. Squatting the weight.",rest:90,repMax:null,warmups:[],type:"weighted"},
+      {id:"thrust2",nm:"HIP THRUST",sp:"4 × 15 · Rest 90 s",cue:"Hold 1 sec at top with posterior pelvic tilt.",steps:["Upper back on bench, bar across hips.","Plant feet flat, hip-width.","Drive hips up to full extension.","Posterior pelvic tilt at top — tuck tailbone under.","Hold 1 second, lower with control."],avoid:"Overextending lumbar. Losing pelvic tilt.",rest:90,repMax:null,warmups:[],type:"weighted"},
+      {id:"abduct2",nm:"LEG ABDUCTOR MACHINE",sp:"3 × 15 · Rest 60 s",cue:"Slow tempo + 10-rep pulse at end of final set — upper glute isolation.",steps:["Sit tall, pads on outer knees.","Slowly push pads apart to full range.","Return with control — do not let weight slam.","Final set: after 15 reps, add 10 small pulses at full range."],avoid:"Rushing tempo. Partial range.",rest:60,repMax:null,warmups:[],type:"repOnly"},
+      {id:"adduct2",nm:"LEG ADDUCTOR MACHINE",sp:"3 × 15 · Rest 60 s",cue:"Controlled movement. Hip stability and injury balance.",steps:["Sit tall, pads on inner knees.","Draw knees together with control.","Return slowly — feel inner thigh resist."],avoid:"Slamming weight. Leaning forward.",rest:60,repMax:null,warmups:[],type:"repOnly"},
+    ],
+    cool:[
+      {n:"Pigeon pose",d:"60 sec / side · gluteus maximus + piriformis · Sat Pilates won't release hips — this is your only lower body recovery before Sat",t:60,sides:2},
+      {n:"Kneeling hip flexor lunge",d:"45 sec / side · hip flexors shortened by squats",t:45,sides:2},
+      {n:"Supine figure-4",d:"30 sec / side · deep glute, sciatic decompression",t:30,sides:2},
+    ]},
+
+    // ── SATURDAY — Pilates ──
+    {id:"sat",label:"SAT",title:"PILATES",sub:"Core · 45–60 min",color:"purple",type:"nonGym",
+    note:"Trainer-led. Can push slightly harder — two full days before next gym session. Focus: deep core stability, oblique definition, spinal articulation. Pilates at sustained sub-maximal tension builds the transverse abdominis corseting effect."},
+
+    // ── SUNDAY — Yoga ──
+    {id:"sun",label:"SUN",title:"YOGA",sub:"Recovery · 45–60 min",color:"green",type:"nonGym",
+    note:"Trainer-led. Recovery and flexibility focus — not power yoga. Hip openers: pigeon, lizard, butterfly. Thoracic mobility: thread-the-needle, twisted lunge. Decompresses the full week's fatigue and opens hips directly before Monday's lower body session."},
+  ]
+};
+
+// ══════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════
+const SK="gcr-log-v1",CHK="gcr-chk-v1";
+function loadLog(){try{return JSON.parse(localStorage.getItem(SK))||{}}catch{return{}}}
+function saveLog(l){try{localStorage.setItem(SK,JSON.stringify(l))}catch{}}
+function loadChecks(){try{return JSON.parse(localStorage.getItem(CHK))||{}}catch{return{}}}
+function saveChecks(c){try{localStorage.setItem(CHK,JSON.stringify(c))}catch{}}
+function todayStr(){return new Date().toISOString().split("T")[0]}
+function fmtTime(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function round25(v){return Math.round(v/2.5)*2.5}
+function exType(ex){return ex.type||"weighted"}
+function isLogged(entry,ex){if(!entry)return false;const t=exType(ex);if(t==="timed")return entry.duration>0||entry.duration_s1>0;if(t==="repOnly")return entry.reps>0;return entry.weight>0&&entry.reps>0}
+
+function getHistory(dayId,exId,max){const log=loadLog(),r=[],sfx="_"+dayId+"_"+exId;Object.keys(log).filter(k=>k.endsWith(sfx)).sort().reverse().forEach(k=>{if(r.length<(max||6))r.push({date:k.split("_")[0],...log[k]})});return r}
+function getLastSession(dayId,exId){const log=loadLog(),tk=todayStr(),sfx="_"+dayId+"_"+exId;const k=Object.keys(log).filter(k=>k.endsWith(sfx)&&!k.startsWith(tk)).sort().reverse()[0];return k?{date:k.split("_")[0],...log[k]}:null}
+
+function playBeep(){try{const ac=new(window.AudioContext||window.webkitAudioContext)();const beeps=[[880,150],[0,80],[880,150],[0,80],[1100,200]];let t=ac.currentTime;beeps.forEach(([freq,dur])=>{if(freq>0){const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.value=freq;o.type="sine";g.gain.value=0.25;o.start(t);o.stop(t+dur/1000)}t+=dur/1000});setTimeout(()=>ac.close(),1500)}catch{}}
+let wl=null;async function reqWL(){try{if("wakeLock"in navigator)wl=await navigator.wakeLock.request("screen")}catch{}}function relWL(){try{wl&&wl.release();wl=null}catch{}}
+
+// ══════════════════════════════════════════
+// MINI TIMER
+// ══════════════════════════════════════════
+function MiniTimer({seconds,sides,color,onDone}){
+  const c=CL[color];
+  const twoPhase=sides===2;
+  const[phase,setPhase]=useState(0);
+  const[rem,setRem]=useState(seconds);
+  const iv=useRef(null);
+  const vib=p=>{try{navigator.vibrate(p)}catch{};playBeep()};
+
+  useEffect(()=>{
+    if((phase===1||phase===3)&&rem>0){
+      iv.current=setInterval(()=>setRem(p=>{
+        if(p<=1){clearInterval(iv.current);vib([200,100,200]);
+          if(phase===1&&twoPhase){setPhase(2);return 0}
+          setPhase(4);if(onDone)onDone();return 0;}return p-1;}),1000);}
+    return()=>clearInterval(iv.current);
+  },[phase,rem]);
+
+  const start=()=>{setRem(seconds);setPhase(1)};
+  const startSide2=()=>{setRem(seconds);setPhase(3)};
+
+  if(phase===0)return h("button",{onClick:start,style:{background:c.bg,border:"1px solid "+c.d,borderRadius:6,color:c.a,padding:"4px 10px",fontSize:11,fontWeight:800,marginTop:4}},
+    "\u23F1 "+fmtTime(seconds)+(twoPhase?" (each)":""));
+
+  if(phase===2)return h("div",{style:{marginTop:4,padding:"8px 12px",background:"#1a1008",border:"1px solid #F0C060",borderRadius:8,textAlign:"center",animation:"switchPulse 1.5s infinite"}},
+    h("div",{style:{fontSize:14,fontWeight:900,color:"#F0C060"}},"\u21C4 SWITCH SIDES"),
+    h("button",{onClick:startSide2,style:{marginTop:6,background:"#F0C060",borderRadius:6,color:"#000",padding:"6px 20px",fontSize:13,fontWeight:800}},"Start side 2"));
+
+  if(phase===4)return h("div",{onClick:()=>{setPhase(0);setRem(seconds)},style:{marginTop:4,fontSize:12,color:c.a,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:6}},"\u2714 Done"+(twoPhase?" (both sides)":""),h("span",{style:{fontSize:10,color:"#3A3A3A",fontWeight:600}},"\u21BB"));
+
+  return h("div",{style:{marginTop:4,display:"flex",alignItems:"center",gap:8}},
+    h("span",{style:{fontSize:16,fontWeight:900,color:rem<=5?"#E891B1":"#F5F0F8",fontVariantNumeric:"tabular-nums",animation:rem<=5?"timerPulse 1s infinite":"none",minWidth:40}},fmtTime(rem)),
+    twoPhase&&h("span",{style:{fontSize:10,color:"#777",fontWeight:700}},phase===1?"Side 1":"Side 2"),
+    h("button",{onClick:()=>{clearInterval(iv.current);if(phase===1&&twoPhase){setPhase(2);setRem(0)}else{setPhase(4);if(onDone)onDone()}},style:{background:"#1a1a1a",border:"1px solid #2a2a2a",borderRadius:6,color:"#888",padding:"3px 10px",fontSize:11,fontWeight:700}},"Skip"));
+}
+
+// ── TAPPABLE VALUE ──
+function TapVal({value,unit,field,onSet,color}){
+  const[ed,setEd]=useState(false);const[draft,setDraft]=useState("");const inp=useRef(null);const c=CL[color];
+  useEffect(()=>{if(ed&&inp.current){inp.current.focus();inp.current.select()}},[ed]);
+  const commit=()=>{const v=parseFloat(draft);if(!isNaN(v)&&v>=0)onSet(field,v);setEd(false)};
+  if(ed)return h("div",{style:{minWidth:56,textAlign:"center",padding:"2px 4px",display:"flex",alignItems:"baseline",justifyContent:"center",background:c.bg,borderRadius:8,border:"1.5px solid "+c.a}},
+    h("input",{ref:inp,type:"number",inputMode:"decimal",step:field==="weight"?"0.5":"1",min:"0",value:draft,onChange:ev=>setDraft(ev.target.value),onBlur:commit,onKeyDown:ev=>{if(ev.key==="Enter")commit()},style:{width:52,background:"transparent",border:"none",outline:"none",color:c.a,fontSize:18,fontWeight:800,textAlign:"center",fontVariantNumeric:"tabular-nums",fontFamily:"inherit",padding:0}}),
+    h("span",{style:{fontSize:10,color:"#555",marginLeft:1}},unit));
+  return h("div",{onClick:()=>{setDraft(value>0?String(value):"");setEd(true)},style:{minWidth:56,textAlign:"center",padding:"2px 4px",display:"flex",alignItems:"baseline",justifyContent:"center",cursor:"pointer",borderRadius:8,border:"1.5px solid transparent"}},
+    h("span",{style:{fontSize:18,fontWeight:800,color:value>0?"#F5F0F8":"#555",fontVariantNumeric:"tabular-nums"}},value>0?value:"\u2014"),
+    h("span",{style:{fontSize:10,color:"#666",marginLeft:2}},unit));
+}
+
+// ── HISTORY VIEW ──
+function HistoryView({dayId,exId,color,et,onDelete}){
+  const[show,setShow]=useState(false);const[confirm,setConfirm]=useState(null);const pressTimer=useRef(null);
+  const hist=getHistory(dayId,exId,6);const c=CL[color];if(hist.length<1)return null;
+  const fmt=en=>{if(et==="repOnly")return(en.reps||0)+" reps";return(en.weight||0)+"kg \u00D7 "+(en.reps||0)};
+  const startPress=i=>{pressTimer.current=setTimeout(()=>{setConfirm(i);try{navigator.vibrate(50)}catch{}},600)};
+  const endPress=()=>{clearTimeout(pressTimer.current)};
+  const doDelete=i=>{const key=hist[i].date+"_"+dayId+"_"+exId;const fr=loadLog();delete fr[key];saveLog(fr);setConfirm(null);if(onDelete)onDelete()};
+  return h("div",{style:{marginTop:4}},h("button",{onClick:()=>setShow(!show),style:{background:"none",color:"#555",fontSize:11,fontWeight:700,padding:"2px 0",display:"flex",alignItems:"center",gap:4}},show?"\u25BE Hide history":"\u25B8 History ("+hist.length+")"),
+    show&&h("div",{style:{marginTop:4,padding:"6px 8px",background:"#0D0A0F",borderRadius:8,border:"1px solid #1a1a1a"}},
+      hist.map((en,i)=>h("div",{key:en.date,onTouchStart:()=>startPress(i),onTouchEnd:endPress,onTouchCancel:endPress,onMouseDown:()=>startPress(i),onMouseUp:endPress,onMouseLeave:endPress,
+        style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"4px 0",borderBottom:i<hist.length-1?"1px solid #111":"none",fontSize:12,userSelect:"none"}},
+        confirm===i?h("div",{style:{display:"flex",alignItems:"center",gap:8,width:"100%"}},
+          h("span",{style:{fontSize:11,color:"#E891B1",fontWeight:700}},"Delete "+en.date+"?"),
+          h("button",{onClick:()=>doDelete(i),style:{background:"#E891B1",borderRadius:6,color:"#000",padding:"3px 10px",fontSize:11,fontWeight:800}},"Yes"),
+          h("button",{onClick:()=>setConfirm(null),style:{background:"#222",border:"1px solid #333",borderRadius:6,color:"#888",padding:"3px 10px",fontSize:11,fontWeight:700}},"No"))
+        :h("div",{style:{display:"flex",justifyContent:"space-between",width:"100%"}},
+          h("span",{style:{color:"#666"}},en.date),h("span",{style:{color:i===0?c.d:"#777",fontWeight:i===0?700:400}},fmt(en))))),
+      h("div",{style:{fontSize:10,color:"#555",marginTop:4,textAlign:"center"}},"Hold to delete")));
+}
+
+// ── LOG WIDGETS ──
+function LogWeighted({exId,dayId,color,onLogUpdate,ex}){
+  const[ver,setVer]=useState(0);const c=CL[color],tk=todayStr(),ck=tk+"_"+dayId+"_"+exId;
+  const log=loadLog(),last=getLastSession(dayId,exId),te=log[ck],cur=te||{weight:0,reps:0},has=te&&(te.weight>0||te.reps>0);
+  const wr=(f,v)=>{const fr=loadLog();const fc=fr[ck]||{weight:0,reps:0};saveLog({...fr,[ck]:{...fc,[f]:v}});setVer(x=>x+1);onLogUpdate&&onLogUpdate()};
+  const upd=(f,d)=>{const fr=loadLog();const fc=fr[ck]||{weight:0,reps:0};const step=f==="weight"?2.5:1;wr(f,Math.max(0,(fc[f]||0)+d*step))};
+  const sal=()=>{if(!last)return;const fr=loadLog();saveLog({...fr,[ck]:{weight:last.weight,reps:last.reps}});setVer(x=>x+1);onLogUpdate&&onLogUpdate()};
+  const imp=last&&has&&(cur.weight>last.weight||(cur.weight===last.weight&&cur.reps>last.reps));
+  const sB={width:36,height:36,borderRadius:8,background:"#1a1a1a",border:"1px solid #2a2a2a",color:"#888",fontSize:18,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"};
+  return h("div",{style:{padding:"0 0 4px"}},
+    h("div",{style:{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",padding:"6px 0"}},
+      h("div",{style:{display:"flex",alignItems:"center"}},h("button",{onClick:()=>upd("weight",-1),style:sB},"\u2212"),h(TapVal,{value:cur.weight,unit:"kg",field:"weight",onSet:(f,v)=>wr(f,v),color}),h("button",{onClick:()=>upd("weight",1),style:sB},"+")),
+      h("span",{style:{color:"#555",fontSize:18}},"\u00D7"),
+      h("div",{style:{display:"flex",alignItems:"center"}},h("button",{onClick:()=>upd("reps",-1),style:sB},"\u2212"),h(TapVal,{value:cur.reps,unit:"reps",field:"reps",onSet:(f,v)=>wr(f,v),color}),h("button",{onClick:()=>upd("reps",1),style:sB},"+")),
+      imp&&h("span",{style:{fontSize:11,fontWeight:800,color:"#6EDBA8",background:"rgba(110,219,168,.12)",borderRadius:6,padding:"3px 8px",marginLeft:4}},"\u25B2 PR")),
+    last&&h("div",{style:{display:"flex",alignItems:"center",gap:8,marginTop:2}},h("span",{style:{fontSize:11,color:"#777"}},"Last ("+last.date+"): "+last.weight+"kg \u00D7 "+last.reps),!has&&h("button",{onClick:sal,style:{fontSize:10,fontWeight:800,color:c.d,background:c.bg,border:"1px solid "+c.d,borderRadius:6,padding:"2px 8px"}},"SAME")),
+    has&&h("button",{onClick:()=>{const fr=loadLog();delete fr[ck];saveLog(fr);setVer(x=>x+1);onLogUpdate&&onLogUpdate()},style:{background:"none",color:"#555",fontSize:11,fontWeight:700,padding:"2px 0",marginTop:2}},"✕ Clear today's entry"),
+    h(HistoryView,{dayId,exId,color,et:"weighted",onDelete:()=>setVer(x=>x+1)}),
+    ex.rest>0&&h("div",{style:{paddingTop:4}},h(MiniTimer,{seconds:ex.rest,color})));
+}
+
+function LogRepOnly({exId,dayId,color,onLogUpdate,ex}){
+  const[ver,setVer]=useState(0);const c=CL[color],tk=todayStr(),ck=tk+"_"+dayId+"_"+exId;
+  const log=loadLog(),last=getLastSession(dayId,exId),te=log[ck],cur=te||{reps:0},has=te&&te.reps>0;
+  const wr=v=>{const fr=loadLog();saveLog({...fr,[ck]:{reps:v}});setVer(x=>x+1);onLogUpdate&&onLogUpdate()};
+  const upd=d=>{const fr=loadLog();const fc=fr[ck]||{reps:0};wr(Math.max(0,(fc.reps||0)+d))};
+  const sal=()=>{if(last)wr(last.reps)};
+  const imp=last&&has&&cur.reps>last.reps;
+  const sB={width:36,height:36,borderRadius:8,background:"#1a1a1a",border:"1px solid #2a2a2a",color:"#888",fontSize:18,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"};
+  return h("div",{style:{padding:"0 0 4px"}},
+    h("div",{style:{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",padding:"6px 0"}},
+      h("div",{style:{display:"flex",alignItems:"center"}},h("button",{onClick:()=>upd(-1),style:sB},"\u2212"),h(TapVal,{value:cur.reps,unit:"reps",field:"reps",onSet:(f,v)=>wr(v),color}),h("button",{onClick:()=>upd(1),style:sB},"+")),
+      imp&&h("span",{style:{fontSize:11,fontWeight:800,color:"#6EDBA8",background:"rgba(110,219,168,.12)",borderRadius:6,padding:"3px 8px",marginLeft:4}},"\u25B2 PR")),
+    last&&h("div",{style:{display:"flex",alignItems:"center",gap:8,marginTop:2}},h("span",{style:{fontSize:11,color:"#777"}},"Last ("+last.date+"): "+last.reps+" reps"),!has&&h("button",{onClick:sal,style:{fontSize:10,fontWeight:800,color:c.d,background:c.bg,border:"1px solid "+c.d,borderRadius:6,padding:"2px 8px"}},"SAME")),
+    has&&h("button",{onClick:()=>{const fr=loadLog();delete fr[ck];saveLog(fr);setVer(x=>x+1);onLogUpdate&&onLogUpdate()},style:{background:"none",color:"#555",fontSize:11,fontWeight:700,padding:"2px 0",marginTop:2}},"✕ Clear today's entry"),
+    h(HistoryView,{dayId,exId,color,et:"repOnly",onDelete:()=>setVer(x=>x+1)}),
+    ex.rest>0&&h("div",{style:{paddingTop:4}},h(MiniTimer,{seconds:ex.rest,color})));
+}
+
+// ── EXERCISE CARD ──
+function ExCard({ex,color,dayId,onLogUpdate}){
+  const[open,setOpen]=useState(false);const c=CL[color];const et=exType(ex);
+  const LC=et==="repOnly"?LogRepOnly:LogWeighted;
+  return h("div",{style:{background:"#13101A",borderRadius:14,borderLeft:"4px solid "+c.a,marginBottom:10,overflow:"hidden"}},
+    h("div",{onClick:()=>setOpen(!open),style:{padding:"14px 16px 8px",cursor:"pointer",userSelect:"none"}},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}},
+        h("div",{style:{fontSize:17,fontWeight:900,color:"#F5F0F8",letterSpacing:.5}},ex.nm),
+        h("div",{style:{fontSize:11,color:c.d,transform:open?"rotate(180deg)":"rotate(0)",transition:"transform .2s",marginTop:4}},"\u25BC")),
+      h("div",{style:{fontSize:12,color:"#888",marginTop:2}},ex.sp),
+      h("div",{style:{marginTop:8,padding:"8px 10px",background:c.bg,borderRadius:8,borderLeft:"3px solid "+c.a}},
+        h("div",{style:{fontSize:14,fontWeight:800,color:c.a,lineHeight:1.4}},ex.cue))),
+    h("div",{style:{maxHeight:open?600:0,overflow:"hidden",transition:"max-height .3s ease"}},
+      h("div",{style:{padding:"0 16px 12px"}},
+        h("div",{style:{fontSize:13,color:"#777",lineHeight:1.8,marginTop:4}},ex.steps.map((s,i)=>h("div",{key:i},h("span",{style:{color:"#555",fontWeight:700}},i+1+"."), " "+s))),
+        ex.avoid&&h("div",{style:{fontSize:11,color:c.d,fontWeight:700,marginTop:8,padding:"4px 8px",background:"rgba(0,0,0,.3)",borderRadius:6,display:"inline-block"}},"\u2715 "+ex.avoid))),
+    h("div",{style:{padding:"0 16px 12px"}},h(LC,{exId:ex.id,dayId,color,onLogUpdate,ex})));
+}
+
+// ── CHECKLIST ITEM ──
+function CheckItem({item,checked,onToggle,color}){
+  const c=CL[color];const hasTimer=!!item.t;
+  return h("div",{style:{padding:"8px 0",borderBottom:"1px solid #141414"}},
+    h("div",{onClick:onToggle,style:{display:"flex",alignItems:"center",gap:10,cursor:"pointer",userSelect:"none",opacity:checked?.5:1,transition:"opacity .2s"}},
+      h("div",{style:{width:22,height:22,borderRadius:6,border:checked?"none":"2px solid #333",background:checked?c.a:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all .2s"}},
+        checked&&h("span",{style:{color:"#000",fontSize:14,fontWeight:900}},"\u2713")),
+      h("div",{style:{flex:1,display:"flex",flexDirection:"column",gap:2}},
+        h("span",{style:{fontWeight:700,color:checked?"#555":"#bbb",fontSize:14,textDecoration:checked?"line-through":"none"}},item.n),
+        h("span",{style:{color:"#777",fontSize:12}},item.d))),
+    hasTimer&&!checked&&h("div",{style:{paddingLeft:32}},
+      h(MiniTimer,{seconds:item.t,sides:item.sides,color,onDone:onToggle})));
+}
+
+// ── SESSION SUMMARY ──
+function SessionSummary({day,color}){
+  const c=CL[color],tk=todayStr(),log=loadLog();let vol=0,prs=0;
+  day.ex.forEach(ex=>{const en=log[tk+"_"+day.id+"_"+ex.id];if(!en)return;const last=getLastSession(day.id,ex.id);const et=exType(ex);
+    if(et==="weighted"&&en.weight>0&&en.reps>0){vol+=en.weight*en.reps;if(last&&(en.weight>last.weight||(en.weight===last.weight&&en.reps>last.reps)))prs++}
+    if(et==="repOnly"&&en.reps>0&&last&&en.reps>last.reps)prs++;});
+  return h("div",{style:{background:c.bg,border:"2px solid "+c.d,borderRadius:16,padding:"20px",marginTop:16,textAlign:"center",animation:"glow 2s infinite"}},
+    h("div",{style:{fontSize:12,fontWeight:800,letterSpacing:3,color:c.d,marginBottom:4}},"SESSION COMPLETE"),
+    h("div",{style:{fontSize:28,fontWeight:900,color:c.a}},"\u2714"),
+    h("div",{style:{display:"flex",justifyContent:"center",gap:24,marginTop:16}},
+      vol>0&&h("div",null,h("div",{style:{fontSize:22,fontWeight:900,color:"#F5F0F8"}},Math.round(vol).toLocaleString()),h("div",{style:{fontSize:11,color:"#555",fontWeight:700}},"TOTAL kg")),
+      h("div",null,h("div",{style:{fontSize:22,fontWeight:900,color:prs>0?"#6EDBA8":"#F5F0F8"}},prs),h("div",{style:{fontSize:11,color:"#555",fontWeight:700}},prs===1?"PR":"PRs"))),
+    h("div",{style:{fontSize:13,color:"#666",marginTop:16,fontStyle:"italic"}},"Track everything. Beat last session."));
+}
+
+function Phase({title,color}){const c=CL[color];return h("div",{style:{fontSize:11,fontWeight:800,letterSpacing:3,color:c.a,borderBottom:"2px solid "+c.d,padding:"18px 0 6px",marginBottom:10}},title)}
+
+// ── DATA MANAGER ──
+function DataManager(){
+  const[msg,setMsg]=useState("");const fR=useRef(null);
+  const doEx=()=>{const d=JSON.stringify(loadLog(),null,2);const b=new Blob([d],{type:"application/json"});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download="gcr-"+todayStr()+".json";document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);setMsg("Exported!");setTimeout(()=>setMsg(""),2000)};
+  const doIm=ev=>{const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);saveLog({...loadLog(),...d});setMsg("Imported "+Object.keys(d).length+" entries!");setTimeout(()=>setMsg(""),3000)}catch{setMsg("Invalid file");setTimeout(()=>setMsg(""),2000)}};r.readAsText(f)};
+  return h("div",{style:{marginTop:24,padding:"16px",background:"#111",borderRadius:12,border:"1px solid #1a1a1a"}},
+    h("div",{style:{fontSize:14,fontWeight:900,marginBottom:10,letterSpacing:1}},"DATA BACKUP"),
+    h("div",{style:{fontSize:12,color:"#555",marginBottom:12}},"Export your log as JSON. Import merges with existing data."),
+    h("div",{style:{display:"flex",gap:10}},
+      h("button",{onClick:doEx,style:{flex:1,padding:"10px",background:"#1a1a1a",border:"1px solid #2a2a2a",borderRadius:10,color:"#888",fontSize:13,fontWeight:700}},"Export"),
+      h("button",{onClick:()=>fR.current.click(),style:{flex:1,padding:"10px",background:"#1a1a1a",border:"1px solid #2a2a2a",borderRadius:10,color:"#888",fontSize:13,fontWeight:700}},"Import")),
+    h("input",{ref:fR,type:"file",accept:".json",onChange:doIm,style:{display:"none"}}),msg&&h("div",{style:{marginTop:8,fontSize:12,color:"#6EDBA8",fontWeight:700,textAlign:"center"}},msg));
+}
+
+// ── INFO VIEW ──
+function InfoView(){
+  return h("div",{style:{animation:"slideUp .2s ease",padding:"20px 0 12px"}},
+    h("div",{style:{textAlign:"center",marginBottom:24}},
+      h("div",{style:{fontSize:28,fontWeight:900,letterSpacing:3,color:"#E891B1"}},"GLUTES & CORE"),
+      h("div",{style:{fontSize:14,fontWeight:700,letterSpacing:3,color:"#555",marginTop:-2}},"DEVELOPMENT PROGRAMME"),
+      h("div",{style:{fontSize:12,color:"#666",fontStyle:"italic",marginTop:8}},"3 gym days · 2 Pilates · 1 Yoga · 1 Rest"),
+      h("div",{style:{fontSize:13,color:"#9A8CAA",marginTop:12,padding:"10px 14px",background:"#13101A",borderRadius:10,lineHeight:1.7}},
+        "Age: 29 · Weight: 45 kg · Height: 159 cm",h("br"),
+        "Goal: upper glute development + visible defined abs")),
+    h("div",{style:{fontSize:16,fontWeight:900,marginBottom:10,letterSpacing:1}},"COACHING NOTES"),
+    PROGRAM.notes.map((r,i)=>h("div",{key:i,style:{padding:"10px 0",borderBottom:"1px solid #141414",fontSize:14,color:"#888"}},h("span",{style:{color:"#F5F0F8",fontWeight:700}},r.l+": "),r.t)),
+    h("div",{style:{fontSize:16,fontWeight:900,marginTop:28,marginBottom:10,letterSpacing:1}},"WEEKLY SCHEDULE"),
+    PROGRAM.days.map((d,i)=>{
+      const c=CL[d.color];
+      return h("div",{key:d.id,style:{display:"flex",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #141414"}},
+        h("span",{style:{width:42,fontSize:13,fontWeight:900,color:c.a}},d.label),
+        h("span",{style:{fontSize:13,color:"#777"}},d.title+" — "+d.sub));}),
+    h(DataManager),
+    h("div",{style:{textAlign:"center",padding:"40px 0"}},
+      h("div",{style:{fontSize:16,fontWeight:900,color:"#E891B1"}},"Track every session."),
+      h("div",{style:{fontSize:16,fontWeight:900,color:"#E891B1",marginTop:4}},"Grow stronger each week.")));
+}
+
+// ── WORKOUT VIEW (gym day) ──
+function WorkoutView({day,onLogUpdate}){
+  const c=CL[day.color],tk=todayStr(),log=loadLog();
+  const done=day.ex.filter(x=>{const en=log[tk+"_"+day.id+"_"+x.id];return isLogged(en,x)}).length;
+  const allDone=done===day.ex.length&&day.ex.length>0;
+  const[cv,setCv]=useState(0);const chks=loadChecks(),chkK=tk+"_"+day.id;
+  const wC=chks[chkK+"_w"]||day.warmup.map(()=>false);
+  const cC=chks[chkK+"_c"]||(day.cool||[]).map(()=>false);
+  const tog=(p,i)=>{const ch=loadChecks();const k=chkK+"_"+p;const a=[...(ch[k]||(p==="w"?day.warmup:(day.cool||[])).map(()=>false))];a[i]=!a[i];ch[k]=a;saveChecks(ch);setCv(v=>v+1)};
+  return h("div",{style:{animation:"slideUp .15s ease"}},
+    h("div",{style:{background:c.g,borderRadius:14,padding:"18px",marginTop:16,marginBottom:16}},
+      h("div",{style:{fontSize:10,fontWeight:800,color:"rgba(255,255,255,.45)",letterSpacing:3}},day.label),
+      h("div",{style:{fontSize:22,fontWeight:900,color:"#fff",marginTop:2}},day.title),
+      h("div",{style:{fontSize:12,color:"rgba(255,255,255,.55)",marginTop:2}},day.sub)),
+    h(Phase,{title:"WARM-UP",color:day.color}),
+    h("div",{style:{marginBottom:16}},day.warmup.map((w,i)=>h(CheckItem,{key:i,item:w,checked:wC[i],onToggle:()=>tog("w",i),color:day.color}))),
+    h(Phase,{title:"WORKING SETS",color:day.color}),
+    day.ex.map(x=>h(ExCard,{key:x.id,ex:x,color:day.color,dayId:day.id,onLogUpdate})),
+    allDone&&h(SessionSummary,{day,color:day.color}),
+    (day.cool&&day.cool.length>0)&&h("div",null,
+      h(Phase,{title:"COOL-DOWN",color:day.color}),
+      h("div",{style:{marginBottom:24}},day.cool.map((w,i)=>h(CheckItem,{key:i,item:w,checked:cC[i],onToggle:()=>tog("c",i),color:day.color})))));
+}
+
+// ── NON-GYM DAY VIEW ──
+function NonGymView({day}){
+  const c=CL[day.color];
+  return h("div",{style:{animation:"slideUp .15s ease"}},
+    h("div",{style:{background:c.g,borderRadius:14,padding:"18px",marginTop:16,marginBottom:16}},
+      h("div",{style:{fontSize:10,fontWeight:800,color:"rgba(255,255,255,.45)",letterSpacing:3}},day.label),
+      h("div",{style:{fontSize:22,fontWeight:900,color:"#fff",marginTop:2}},day.title),
+      h("div",{style:{fontSize:12,color:"rgba(255,255,255,.55)",marginTop:2}},day.sub)),
+    h("div",{style:{background:c.bg,borderLeft:"4px solid "+c.d,borderRadius:12,padding:"16px",marginBottom:16}},
+      h("div",{style:{fontSize:13,color:c.a,lineHeight:1.8}},(day.note||""))));
+}
+
+// ══════════════════════════════════════════
+// PROTEIN TRACKER
+// ══════════════════════════════════════════
+const PK="gcr-protein-v1",WK="gcr-weight-v1",DEFAULT_BW=45;
+function loadProtein(){try{return JSON.parse(localStorage.getItem(PK))||{}}catch{return{}}}
+function saveProtein(d){try{localStorage.setItem(PK,JSON.stringify(d))}catch{}}
+function getProteinDay(date){const d=loadProtein();return d[date]||[]}
+function addProteinEntry(grams){const tk=todayStr(),d=loadProtein(),entries=d[tk]||[];entries.push({g:grams,t:new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})});d[tk]=entries;saveProtein(d)}
+function removeProteinEntry(idx){const tk=todayStr(),d=loadProtein(),entries=d[tk]||[];entries.splice(idx,1);d[tk]=entries;saveProtein(d)}
+function getProteinTotal(date){return getProteinDay(date).reduce((s,e)=>s+e.g,0)}
+function loadWeights(){try{return JSON.parse(localStorage.getItem(WK))||{}}catch{return{}}}
+function saveWeights(d){try{localStorage.setItem(WK,JSON.stringify(d))}catch{}}
+function getLatestWeight(){const w=loadWeights(),keys=Object.keys(w).sort().reverse();return keys.length>0?{date:keys[0],kg:w[keys[0]]}:{date:null,kg:DEFAULT_BW}}
+function calcProtein(bw){return{target:Math.round(bw*1.8),lo:Math.round(bw*1.6),hi:Math.round(bw*2.0)}}
+
+function ProteinView(){
+  const[ver,setVer]=useState(0);const[custom,setCustom]=useState("");const[wDraft,setWDraft]=useState("");const[wEdit,setWEdit]=useState(false);const inp=useRef(null);
+  const tk=todayStr(),entries=getProteinDay(tk),total=entries.reduce((s,e)=>s+e.g,0);
+  const lw=getLatestWeight(),bw=lw.kg,pr=calcProtein(bw);
+  const pct=Math.min(100,(total/pr.target)*100);
+  const hit=total>=pr.lo,over=total>=pr.target;
+  const add=g=>{addProteinEntry(g);setVer(v=>v+1)};
+  const rm=i=>{removeProteinEntry(i);setVer(v=>v+1)};
+  const addCustom=()=>{const v=parseFloat(custom);if(!isNaN(v)&&v>0){add(v);setCustom("")}};
+  const saveWeight=()=>{const v=parseFloat(wDraft);if(!isNaN(v)&&v>0){const w=loadWeights();w[tk]=v;saveWeights(w);setWEdit(false);setVer(x=>x+1)}};
+  const todayWeight=loadWeights()[tk];
+  const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().split("T")[0];days.push({date:ds,label:i===0?"Today":d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric"}),total:getProteinTotal(ds)})}
+  const maxDay=Math.max(pr.target,...days.map(d=>d.total));
+  return h("div",{style:{animation:"slideUp .15s ease",padding:"20px 0 12px"}},
+    h("div",{style:{fontSize:11,fontWeight:800,letterSpacing:3,color:"#E891B1",borderBottom:"2px solid #9B4A6E",padding:"0 0 6px",marginBottom:12}},"BODYWEIGHT"),
+    h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 0",marginBottom:8}},
+      h("div",{style:{display:"flex",alignItems:"baseline",gap:6}},
+        h("span",{style:{fontSize:28,fontWeight:900,color:"#F5F0F8",fontVariantNumeric:"tabular-nums"}},todayWeight||bw),
+        h("span",{style:{fontSize:14,color:"#555",fontWeight:700}},"kg"),
+        !todayWeight&&lw.date&&h("span",{style:{fontSize:10,color:"#555"}},"("+lw.date+")")),
+      wEdit?h("div",{style:{display:"flex",gap:6,alignItems:"center"}},
+        h("input",{type:"number",inputMode:"decimal",step:"0.1",value:wDraft,onChange:ev=>setWDraft(ev.target.value),onKeyDown:ev=>{if(ev.key==="Enter")saveWeight()},style:{width:64,padding:"6px 8px",borderRadius:8,background:"#141414",border:"1px solid #E891B1",color:"#F5F0F8",fontSize:14,fontWeight:700,outline:"none",textAlign:"center",fontFamily:"inherit"}}),
+        h("button",{onClick:saveWeight,style:{padding:"6px 12px",borderRadius:8,background:"#E891B1",color:"#000",fontSize:12,fontWeight:800}},"Save"))
+      :h("button",{onClick:()=>{setWDraft(todayWeight?String(todayWeight):String(bw));setWEdit(true)},style:{padding:"6px 14px",borderRadius:8,background:"#141414",border:"1px solid #222",color:"#888",fontSize:12,fontWeight:700}},todayWeight?"Update":"Log today")),
+    h("div",{style:{fontSize:11,fontWeight:800,letterSpacing:3,color:"#E891B1",borderBottom:"2px solid #9B4A6E",padding:"18px 0 6px",marginBottom:16}},"DAILY PROTEIN"),
+    h("div",{style:{textAlign:"center",marginBottom:20}},
+      h("div",{style:{fontSize:48,fontWeight:900,color:over?"#6EDBA8":hit?"#F0C060":"#F5F0F8",marginTop:4,fontVariantNumeric:"tabular-nums"}},total+"g"),
+      h("div",{style:{fontSize:13,color:"#666",marginTop:2}},"Target: "+pr.target+"g (range: "+pr.lo+"\u2013"+pr.hi+"g) · "+bw+"kg")),
+    h("div",{style:{margin:"0 0 24px",padding:"0 4px"}},
+      h("div",{style:{height:8,background:"#1a1a1a",borderRadius:4,position:"relative",overflow:"hidden"}},
+        h("div",{style:{height:"100%",borderRadius:4,background:over?"#6EDBA8":hit?"#F0C060":"#E891B1",width:pct+"%",transition:"width .4s",boxShadow:pct>0?"0 0 8px "+(over?"rgba(110,219,168,.4)":"rgba(232,145,177,.3)"):"none"}})),
+      h("div",{style:{display:"flex",justifyContent:"space-between",marginTop:4}},
+        h("span",{style:{fontSize:10,color:"#555"}},"0g"),
+        h("span",{style:{fontSize:10,color:"#555"}},pr.target+"g target"))),
+    h("div",{style:{fontSize:11,fontWeight:800,letterSpacing:3,color:"#E891B1",borderBottom:"2px solid #9B4A6E",padding:"0 0 6px",marginBottom:12}},"QUICK ADD"),
+    h("div",{style:{display:"flex",gap:8,marginBottom:12}},
+      [15,20,25,30].map(g=>h("button",{key:g,onClick:()=>add(g),style:{flex:1,padding:"12px 0",borderRadius:10,background:"#141414",border:"1px solid #222",color:"#F5F0F8",fontSize:15,fontWeight:800,minHeight:44}},"+"+g+"g"))),
+    h("div",{style:{display:"flex",gap:8,marginBottom:20}},
+      h("input",{ref:inp,type:"number",inputMode:"decimal",placeholder:"Custom g",value:custom,onChange:ev=>setCustom(ev.target.value),onKeyDown:ev=>{if(ev.key==="Enter")addCustom()},style:{flex:1,padding:"10px 14px",borderRadius:10,background:"#141414",border:"1px solid #222",color:"#F5F0F8",fontSize:14,fontWeight:700,outline:"none",fontFamily:"inherit"}}),
+      h("button",{onClick:addCustom,style:{padding:"10px 20px",borderRadius:10,background:"#E891B1",color:"#000",fontSize:14,fontWeight:800,minHeight:44}},"ADD")),
+    entries.length>0&&h("div",null,
+      h("div",{style:{fontSize:11,fontWeight:800,letterSpacing:3,color:"#E891B1",borderBottom:"2px solid #9B4A6E",padding:"0 0 6px",marginBottom:10}},"TODAY"),
+      entries.map((e,i)=>h("div",{key:i,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #141414"}},
+        h("div",{style:{display:"flex",alignItems:"center",gap:10}},
+          h("span",{style:{fontSize:16,fontWeight:800,color:"#F5F0F8"}},e.g+"g"),
+          h("span",{style:{fontSize:12,color:"#555"}},e.t)),
+        h("button",{onClick:()=>rm(i),style:{background:"none",color:"#555",fontSize:12,fontWeight:700,padding:"4px 8px"}},"\u2715")))),
+    h("div",{style:{marginTop:24}},
+      h("div",{style:{fontSize:11,fontWeight:800,letterSpacing:3,color:"#E891B1",borderBottom:"2px solid #9B4A6E",padding:"0 0 6px",marginBottom:12}},"LAST 7 DAYS"),
+      days.map((d,i)=>{const dpct=maxDay>0?(d.total/maxDay)*100:0;const isToday=d.date===tk;
+        return h("div",{key:d.date,style:{display:"flex",alignItems:"center",gap:10,padding:"6px 0"}},
+          h("span",{style:{fontSize:12,fontWeight:isToday?800:600,color:isToday?"#F5F0F8":"#666",minWidth:50}},d.label),
+          h("div",{style:{flex:1,height:6,background:"#1a1a1a",borderRadius:3}},
+            h("div",{style:{height:"100%",borderRadius:3,background:d.total>=pr.lo?"#6EDBA8":d.total>0?"#E891B1":"transparent",width:dpct+"%",transition:"width .3s"}})),
+          h("span",{style:{fontSize:12,fontWeight:700,color:d.total>=pr.lo?"#6EDBA8":d.total>0?"#888":"#333",minWidth:36,textAlign:"right"}},d.total>0?d.total+"g":"\u2014"));})));
+}
+
+// ══════════════════════════════════════════
+// APP
+// ══════════════════════════════════════════
+function App(){
+  const[ad,setAd]=useState(0);const[view,setView]=useState("workout");const[lv,setLv]=useState(0);
+  const onLU=useCallback(()=>setLv(v=>v+1),[]);
+  useEffect(()=>{reqWL();return()=>relWL()},[]);
+  useEffect(()=>{const fn=()=>{if(document.visibilityState==="visible")reqWL()};document.addEventListener("visibilitychange",fn);return()=>document.removeEventListener("visibilitychange",fn)},[]);
+  const day=PROGRAM.days[ad],c=CL[day.color],log=loadLog(),tk=todayStr();
+  const gymDay=day.type==="gym";
+  const done=gymDay?day.ex.filter(x=>{const en=log[tk+"_"+day.id+"_"+x.id];return isLogged(en,x)}).length:0;
+  const pct=gymDay&&day.ex.length>0?(done/day.ex.length)*100:0;
+  const ds=new Date().toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+  return h("div",{style:{background:"#0D0A0F",minHeight:"100vh",maxWidth:480,margin:"0 auto",fontFamily:"-apple-system,'SF Pro Display','Segoe UI',sans-serif",color:"#F5F0F8",position:"relative",paddingBottom:80,WebkitFontSmoothing:"antialiased"}},
+    h("div",{style:{padding:"20px 20px 0",position:"sticky",top:0,zIndex:50,background:"#0D0A0F"}},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+        h("div",null,
+          h("div",{style:{fontSize:20,fontWeight:900,letterSpacing:2,color:"#E891B1"}},"GLUTES & CORE"),
+          h("div",{style:{fontSize:12,fontWeight:700,letterSpacing:3,color:"#555",marginTop:-2}},"ROUTINE"),
+          (view==="workout"||view==="protein")&&h("div",{style:{fontSize:11,color:"#555",marginTop:1}},ds)),
+        h("div",{style:{display:"flex",gap:6}},
+          view==="protein"||view==="info"
+            ?h("button",{onClick:()=>setView("workout"),style:{background:"#161616",border:"1px solid #222",borderRadius:10,color:"#777",padding:"8px 12px",fontSize:12,fontWeight:700,letterSpacing:1}},"BACK")
+            :h("div",{style:{display:"flex",gap:6}},
+              h("button",{onClick:()=>setView("protein"),style:{background:"#161616",border:"1px solid #222",borderRadius:10,color:"#777",padding:"8px 12px",fontSize:12,fontWeight:700,letterSpacing:1}},"PROTEIN"),
+              h("button",{onClick:()=>setView("info"),style:{background:"#161616",border:"1px solid #222",borderRadius:10,color:"#777",padding:"8px 12px",fontSize:12,fontWeight:700,letterSpacing:1}},"INFO")))),
+      view==="workout"&&gymDay&&h("div",{style:{marginTop:12,marginBottom:4}},
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}},
+          h("span",{style:{fontSize:11,color:"#666",fontWeight:700}},"SESSION PROGRESS"),
+          h("span",{style:{fontSize:11,color:pct>=100?"#6EDBA8":c.d,fontWeight:800}},done+"/"+day.ex.length+(pct>=100?" \u2714":""))),
+        h("div",{style:{height:3,background:"#1a1a1a",borderRadius:2}},h("div",{style:{height:"100%",borderRadius:2,background:pct>=100?"#6EDBA8":c.a,width:pct+"%",transition:"width .4s",boxShadow:pct>0?"0 0 8px "+(pct>=100?"rgba(110,219,168,.5)":"rgba(232,145,177,.4)"):"none"}}))),
+      view==="workout"&&h("div",{style:{display:"flex",gap:4,marginTop:12,paddingBottom:14,borderBottom:"1px solid #141414",overflowX:"auto"}},
+        PROGRAM.days.map((d,i)=>{const dc=CL[d.color],act=i===ad;
+          return h("button",{key:d.id,onClick:()=>setAd(i),style:{flex:1,minWidth:42,padding:"8px 2px",borderRadius:10,background:act?dc.bg:"transparent",border:act?"1.5px solid "+dc.d:"1.5px solid transparent",textAlign:"center",transition:"all .2s"}},
+            h("div",{style:{fontSize:10,fontWeight:800,letterSpacing:1,color:act?dc.a:"#555"}},d.label),
+            h("div",{style:{fontSize:9,fontWeight:700,color:act?"#999":"#555",marginTop:1}},d.type==="rest"?"\u2014":d.type==="nonGym"?"\u26ac":"\u25A0"))}))),
+    h("div",{style:{padding:"0 16px"}},
+      view==="info"?h(InfoView):
+      view==="protein"?h(ProteinView):
+      gymDay?h(WorkoutView,{day,onLogUpdate:onLU}):
+      h(NonGymView,{day})));
+}
+ReactDOM.createRoot(document.getElementById("app")).render(h(App));
+if("serviceWorker"in navigator){const sw='self.addEventListener("install",e=>self.skipWaiting());self.addEventListener("activate",e=>self.clients.claim());self.addEventListener("fetch",e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{if(resp.ok){const c=resp.clone();caches.open("gcr-v1").then(cache=>cache.put(e.request,c))}return resp}).catch(()=>new Response("Offline",{status:503})))));';navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:"application/javascript"}))).catch(()=>{})}
+</script>
+</body>
+</html>
